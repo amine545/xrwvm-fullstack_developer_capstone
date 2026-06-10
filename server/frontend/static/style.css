@@ -58,7 +58,85 @@ img{
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex:1
+  flex:1;
+  padding: 20px;
+  text-align: center;
+}
+
+.about-card {
+  border: 1px solid #ddd;
+}
+
+.about-team {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  margin: auto;
+  padding: 16px 24px 32px;
+  justify-content: center;
+}
+
+.team-card {
+  border: 1px solid #ddd;
+  margin: 0;
+}
+
+.team-card img {
+  width: 70%;
+  border-radius: 50%;
+  margin-top: 24px;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+@media (max-width: 768px) {
+  .about-team {
+    flex-direction: column;
+  }
+
+  .team-card {
+    width: 100% !important;
+  }
+}
+
+.contact-page {
+  display: flex;
+  justify-content: center;
+  padding: 60px 24px;
+}
+
+.contact-panel {
+  display: flex;
+  gap: 36px;
+  align-items: center;
+  width: min(900px, 100%);
+  border: 1px solid #ddd;
+  padding: 32px;
+}
+
+.contact-image {
+  flex: 1;
+  text-align: center;
+}
+
+.contact-image img {
+  width: min(280px, 100%);
+}
+
+.contact-details {
+  flex: 1.4;
+  font-size: 18px;
+}
+
+.contact-details h1 {
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .contact-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .form_panel {
