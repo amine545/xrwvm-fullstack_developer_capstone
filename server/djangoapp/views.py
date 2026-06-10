@@ -15,6 +15,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from .models import CarMake, CarModel
 from .populate import initiate
+from .restapis import get_request, analyze_review_sentiments, post_review
 
 
 # Get an instance of a logger
@@ -137,16 +138,21 @@ def registration(request):
 
 
 def get_dealerships(request, state="All"):
-    if state and state != "All":
-        dealers = [dealer for dealer in DEALERS if dealer["state"] == state]
+    if(state == "All"):
+        endpoint = "/fetchDealers"
     else:
-        dealers = DEALERS
-    return JsonResponse({"status": 200, "dealers": dealers})
+        endpoint = "/fetchDealers/"+state
+    dealerships = get_request(endpoint)
+    return JsonResponse({"status":200,"dealers":dealerships})
 
 
 def get_dealer_details(request, dealer_id):
-    dealers = [dealer for dealer in DEALERS if dealer["id"] == dealer_id]
-    return JsonResponse({"status": 200, "dealer": dealers})
+    if(dealer_id):
+        endpoint = "/fetchDealer/"+str(dealer_id)
+        dealership = get_request(endpoint)
+        return JsonResponse({"status":200,"dealer":dealership})
+    else:
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 
 def get_cars(request):
@@ -166,11 +172,16 @@ def get_cars(request):
 
 
 def get_dealer_reviews(request, dealer_id):
-    reviews = [
-        review for review in REVIEWS
-        if int(review["dealership"]) == int(dealer_id)
-    ]
-    return JsonResponse({"status": 200, "reviews": reviews})
+    if(dealer_id):
+        endpoint = "/fetchReviews/dealer/"+str(dealer_id)
+        reviews = get_request(endpoint)
+        for review_detail in reviews:
+            response = analyze_review_sentiments(review_detail['review'])
+            print(response)
+            review_detail['sentiment'] = response['sentiment']
+        return JsonResponse({"status":200,"reviews":reviews})
+    else:
+        return JsonResponse({"status":400,"message":"Bad Request"})
 
 # Create a `get_dealer_details` view to render the dealer details
 
@@ -179,27 +190,12 @@ def get_dealer_reviews(request, dealer_id):
 
 @csrf_exempt
 def add_review(request):
-    data = json.loads(request.body)
-    review_text = data.get("review", "")
-    lowered_review = review_text.lower()
-    if any(word in lowered_review for word in ["bad", "poor", "terrible", "awful"]):
-        sentiment = "negative"
-    elif any(word in lowered_review for word in ["ok", "average", "fine"]):
-        sentiment = "neutral"
+    if(request.user.is_anonymous == False):
+        data = json.loads(request.body)
+        try:
+            response = post_review(data)
+            return JsonResponse({"status": 200})
+        except:
+            return JsonResponse({"status": 401, "message": "Error in posting review"})
     else:
-        sentiment = "positive"
-
-    review = {
-        "id": len(REVIEWS) + 1,
-        "dealership": int(data["dealership"]),
-        "name": data["name"],
-        "review": review_text,
-        "purchase": data.get("purchase", True),
-        "purchase_date": data.get("purchase_date", ""),
-        "car_make": data.get("car_make", ""),
-        "car_model": data.get("car_model", ""),
-        "car_year": data.get("car_year", ""),
-        "sentiment": sentiment,
-    }
-    REVIEWS.append(review)
-    return JsonResponse({"status": 200, "review": review})
+        return JsonResponse({"status": 403, "message": "Unauthorized"})
