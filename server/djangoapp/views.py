@@ -143,6 +143,10 @@ def get_dealerships(request, state="All"):
     else:
         endpoint = "/fetchDealers/"+state
     dealerships = get_request(endpoint)
+    if dealerships is None:
+        dealerships = DEALERS if state == "All" else [
+            dealer for dealer in DEALERS if dealer["state"] == state
+        ]
     return JsonResponse({"status":200,"dealers":dealerships})
 
 
@@ -150,6 +154,10 @@ def get_dealer_details(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchDealer/"+str(dealer_id)
         dealership = get_request(endpoint)
+        if dealership is None:
+            dealership = [
+                dealer for dealer in DEALERS if dealer["id"] == dealer_id
+            ]
         return JsonResponse({"status":200,"dealer":dealership})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
@@ -175,10 +183,17 @@ def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
         reviews = get_request(endpoint)
+        if reviews is None:
+            reviews = [
+                review for review in REVIEWS
+                if int(review["dealership"]) == dealer_id
+            ]
         for review_detail in reviews:
             response = analyze_review_sentiments(review_detail['review'])
-            print(response)
-            review_detail['sentiment'] = response['sentiment']
+            if response is not None:
+                review_detail['sentiment'] = response['sentiment']
+            elif 'sentiment' not in review_detail:
+                review_detail['sentiment'] = 'neutral'
         return JsonResponse({"status":200,"reviews":reviews})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
@@ -194,6 +209,16 @@ def add_review(request):
         data = json.loads(request.body)
         try:
             response = post_review(data)
+            if response is None:
+                review = data.copy()
+                review["id"] = max([item["id"] for item in REVIEWS], default=0) + 1
+                review["dealership"] = int(review["dealership"])
+                review["car_year"] = int(review["car_year"])
+                sentiment = analyze_review_sentiments(review["review"])
+                review["sentiment"] = (
+                    sentiment["sentiment"] if sentiment is not None else "neutral"
+                )
+                REVIEWS.append(review)
             return JsonResponse({"status": 200})
         except:
             return JsonResponse({"status": 401, "message": "Error in posting review"})

@@ -1,0 +1,11 @@
+Task 1 README URL:
+https://github.com/amine545/xrwvm-fullstack_developer_capstone/blob/main/README.md
+
+Task 3 About.html URL:
+https://github.com/amine545/xrwvm-fullstack_developer_capstone/blob/main/server/frontend/static/About.html
+
+Task 4 Contact.html URL:
+https://github.com/amine545/xrwvm-fullstack_developer_capstone/blob/main/server/frontend/static/Contact.html
+
+Task 7 Register.jsx URL:
+https://github.com/amine545/xrwvm-fullstack_developer_capstone/blob/main/server/frontend/src/components/Register/Register.jsx

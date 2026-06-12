@@ -1,0 +1,5 @@
+COMMAND:
+curl -X GET "http://127.0.0.1:8000/djangoapp/dealer/1"
+
+OUTPUT:
+{"status": 200, "dealer": [{"id": 1, "full_name": "Holdlamis Car Dealership", "city": "El Paso", "address": "3 Nova Court", "zip": "88563", "state": "Texas"}]}

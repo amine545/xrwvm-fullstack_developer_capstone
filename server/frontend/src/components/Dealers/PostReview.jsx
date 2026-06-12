@@ -22,29 +22,33 @@ const PostReview = () => {
   let carmodels_url = root_url+`djangoapp/get_cars`;
 
   const postreview = async ()=>{
+    const reviewValue = document.getElementById("review")?.value || review;
+    const modelValue = document.getElementById("cars")?.value || model;
+    const dateValue = document.getElementById("purchase_date")?.value || date;
+    const yearValue = document.getElementById("car_year")?.value || year;
     let name = sessionStorage.getItem("firstname")+" "+sessionStorage.getItem("lastname");
     //If the first and second name are stores as null, use the username
     if(name.includes("null")) {
       name = sessionStorage.getItem("username");
     }
-    if(!model || review === "" || date === "" || year === "" || model === "") {
+    if(!modelValue || reviewValue === "" || dateValue === "" || yearValue === "" || modelValue === "") {
       alert("All details are mandatory")
       return;
     }
 
-    let model_split = model.split(" ");
+    let model_split = modelValue.split(" ");
     let make_chosen = model_split[0];
     let model_chosen = model_split[1];
 
     let jsoninput = JSON.stringify({
       "name": name,
       "dealership": id,
-      "review": review,
+      "review": reviewValue,
       "purchase": true,
-      "purchase_date": date,
+      "purchase_date": dateValue,
       "car_make": make_chosen,
       "car_model": model_chosen,
-      "car_year": year,
+      "car_year": yearValue,
     });
 
     console.log(jsoninput);
@@ -97,7 +101,7 @@ const PostReview = () => {
       <h1 style={{color:"darkblue"}}>{dealer.full_name}</h1>
       <textarea id='review' cols='50' rows='7' onChange={(e) => setReview(e.target.value)}></textarea>
       <div className='input_field'>
-      Purchase Date <input type="date" onChange={(e) => setDate(e.target.value)}/>
+      Purchase Date <input id="purchase_date" type="date" onChange={(e) => setDate(e.target.value)}/>
       </div>
       <div className='input_field'>
       Car Make 
@@ -110,7 +114,7 @@ const PostReview = () => {
       </div >
 
       <div className='input_field'>
-      Car Year <input type="int" onChange={(e) => setYear(e.target.value)} max={2023} min={2015}/>
+      Car Year <input id="car_year" type="number" onChange={(e) => setYear(e.target.value)} max={2026} min={2015}/>
       </div>
 
       <div>

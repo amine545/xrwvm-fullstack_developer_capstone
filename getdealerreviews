@@ -1,0 +1,5 @@
+COMMAND:
+curl -X GET "http://127.0.0.1:8000/djangoapp/reviews/dealer/1"
+
+OUTPUT:
+{"status": 200, "reviews": [{"id": 1, "dealership": 1, "name": "lauvshree", "review": "Fantastic Dealership.", "purchase": true, "purchase_date": "2023-01-12", "car_make": "NISSAN", "car_model": "Qashqai", "car_year": 2023, "sentiment": "positive"}, {"id": 2, "dealership": 1, "name": "lauvshree", "review": "Great Service. Highly recommended.", "purchase": true, "purchase_date": "2023-01-12", "car_make": "NISSAN", "car_model": "XTRAIL", "car_year": 2023, "sentiment": "positive"}]}
