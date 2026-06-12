@@ -1,3 +1,13 @@
+FROM node:18.12.1-bullseye-slim AS frontend
+
+WORKDIR /frontend
+
+COPY server/frontend/package*.json ./
+RUN npm install
+
+COPY server/frontend/ ./
+RUN npm run build
+
 FROM python:3.12.0-slim-bookworm
 
 ENV PYTHONUNBUFFERED=1
@@ -10,6 +20,7 @@ COPY server/requirements.txt $APP/requirements.txt
 RUN pip3 install -r requirements.txt
 
 COPY server/ $APP
+COPY --from=frontend /frontend/build $APP/frontend/build
 
 EXPOSE 8000
 
